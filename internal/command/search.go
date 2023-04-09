@@ -20,50 +20,65 @@ func Search(text, database, browser, selectCmd string, stdout, stderr io.Writer)
 		return fmt.Errorf("failed opening connection to sqlite: %v", err)
 	}
 
-	entries, err := client.Entry.
+	entries, err := getEntries(client, text)
+	if err != nil {
+		return fmt.Errorf("search failed: %v", err)
+	}
+
+	selectedBody, err := selectEntry(stderr, selectCmd, entries)
+	if err != nil {
+		return err
+	}
+
+	if len(selectedBody) == 0 {
+		return nil
+	}
+
+	if err = clipboard.Init(); err == nil {
+		clipboard.Write(clipboard.FmtText, []byte(selectedBody))
+	}
+
+	if strings.HasPrefix(selectedBody, "http") {
+		cmd := exec.Command(browser, selectedBody)
+		if err = cmd.Run(); err != nil {
+			return fmt.Errorf("command execute failed: %v", err)
+		}
+	}
+
+	return nil
+}
+
+func getEntries(client *ent.Client, text string) ([]*ent.Entry, error) {
+	return client.Entry.
 		Query().
 		Where(func(s *sql.Selector) {
 			s.Where(sql.Like(entry.FieldTitle, "%"+text+"%"))
 		}).
 		Select(entry.FieldID, entry.FieldTitle, entry.FieldBody, entry.FieldTag).
 		All(context.Background())
+}
 
-	if err != nil {
-		return fmt.Errorf("search failed: %v", err)
-	}
-
+func selectEntry(stderr io.Writer, selectCmd string, entries []*ent.Entry) (string, error) {
 	var inbuf string
-	var outbuf bytes.Buffer
 	dict := make(map[string]string)
-
 	for _, entry := range entries {
 		inbuf += fmt.Sprintf("%s\n", entry.Title)
 		dict[entry.Title] = entry.Body
 	}
 
+	var outbuf bytes.Buffer
 	cmd := exec.Command("sh", "-c", selectCmd)
 	cmd.Stderr = stderr
 	cmd.Stdout = &outbuf
 	cmd.Stdin = strings.NewReader(inbuf)
-	if err = cmd.Run(); err != nil {
-		return fmt.Errorf("select command failed: %v", err)
+	if err := cmd.Run(); err != nil {
+		return "", fmt.Errorf("select command failed: %v", err)
 	}
 
 	selected := strings.TrimRight(outbuf.String(), "\n")
-
-	if len(selected) > 0 {
-		body := dict[selected]
-
-		if err = clipboard.Init(); err == nil {
-			clipboard.Write(clipboard.FmtText, []byte(body))
-		}
-
-		if strings.HasPrefix(body, "http") {
-			cmd = exec.Command(browser, body)
-			if err = cmd.Run(); err != nil {
-				return fmt.Errorf("command execute failed: %v", err)
-			}
-		}
+	if len(selectCmd) == 0 {
+		return "", nil
 	}
-	return nil
+
+	return dict[selected], nil
 }
