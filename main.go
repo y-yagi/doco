@@ -9,6 +9,7 @@ import (
 
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/y-yagi/configure"
+	"github.com/y-yagi/doco/internal/command"
 )
 
 const cmd = "doco"
@@ -97,15 +98,15 @@ func run(args []string, stdout, stderr io.Writer) int {
 	}
 
 	if migrateFlag {
-		return msg(migrate(stdout, stderr), stderr)
+		return msg(command.Migrate(cfg.DataBase, stdout, stderr), stderr)
 	}
 
 	if addFlag {
-		return msg(add(stdout, stderr), stderr)
+		return msg(command.Add(cfg.DataBase, stdout, stderr), stderr)
 	}
 
 	if consoleFlag {
-		return msg(console(stdout, stderr), stderr)
+		return msg(command.Console(cfg.DataBase, stdout, stderr), stderr)
 	}
 
 	if len(flags.Args()) != 1 {
@@ -113,5 +114,5 @@ func run(args []string, stdout, stderr io.Writer) int {
 		return 1
 	}
 
-	return msg(search(flags.Arg(0), stdout, stderr), stderr)
+	return msg(command.Search(flags.Arg(0), cfg.DataBase, cfg.Browser, cfg.SelectCmd, stdout, stderr), stderr)
 }
