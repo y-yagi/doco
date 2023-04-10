@@ -11,11 +11,12 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"github.com/y-yagi/doco/ent"
 	"github.com/y-yagi/doco/ent/entry"
+	"github.com/y-yagi/doco/internal/config"
 	"golang.design/x/clipboard"
 )
 
-func Search(text, database, browser, selectCmd string, stdout, stderr io.Writer) error {
-	client, err := ent.Open("sqlite3", database+"?_fk=1")
+func Search(text string, cfg config.Config, stdout, stderr io.Writer) error {
+	client, err := ent.Open("sqlite3", cfg.DataBase+"?_fk=1")
 	if err != nil {
 		return fmt.Errorf("failed opening connection to sqlite: %v", err)
 	}
@@ -25,7 +26,7 @@ func Search(text, database, browser, selectCmd string, stdout, stderr io.Writer)
 		return fmt.Errorf("search failed: %v", err)
 	}
 
-	selectedBody, err := selectEntry(stderr, selectCmd, entries)
+	selectedBody, err := selectEntry(stderr, cfg.SelectCmd, entries)
 	if err != nil {
 		return err
 	}
@@ -38,8 +39,8 @@ func Search(text, database, browser, selectCmd string, stdout, stderr io.Writer)
 		clipboard.Write(clipboard.FmtText, []byte(selectedBody))
 	}
 
-	if strings.HasPrefix(selectedBody, "http") {
-		cmd := exec.Command(browser, selectedBody)
+	if cfg.AutomaticallyOpenBrowser && strings.HasPrefix(selectedBody, "http") {
+		cmd := exec.Command(cfg.Browser, selectedBody)
 		if err = cmd.Run(); err != nil {
 			return fmt.Errorf("command execute failed: %v", err)
 		}

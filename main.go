@@ -10,18 +10,13 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/y-yagi/configure"
 	"github.com/y-yagi/doco/internal/command"
+	"github.com/y-yagi/doco/internal/config"
 )
 
 const cmd = "doco"
 
-type config struct {
-	DataBase  string `toml:"database"`
-	SelectCmd string `toml:"selectcmd"`
-	Browser   string `toml:"browser"`
-}
-
 var (
-	cfg         config
+	cfg         config.Config
 	flags       *flag.FlagSet
 	showVersion bool
 	migrateFlag bool
@@ -114,5 +109,5 @@ func run(args []string, stdout, stderr io.Writer) int {
 		return 1
 	}
 
-	return msg(command.Search(flags.Arg(0), cfg.DataBase, cfg.Browser, cfg.SelectCmd, stdout, stderr), stderr)
+	return msg(command.Search(flags.Arg(0), cfg, stdout, stderr), stderr)
 }
