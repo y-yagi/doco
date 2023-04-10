@@ -77,7 +77,7 @@ func selectEntry(stderr, stdout io.Writer, selectCmd string, entries []*ent.Entr
 	cmd.Stderr = stderr
 	cmd.Stdout = &outbuf
 	cmd.Stdin = strings.NewReader(inbuf)
-	if err := cmd.Start(); err != nil {
+	if err := cmd.Run(); err != nil {
 		return "", fmt.Errorf("select command failed: %v", err)
 	}
 
