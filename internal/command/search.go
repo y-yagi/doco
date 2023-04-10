@@ -26,7 +26,7 @@ func Search(text string, cfg config.Config, stdout, stderr io.Writer) error {
 		return fmt.Errorf("search failed: %v", err)
 	}
 
-	selectedBody, err := selectEntry(stderr, cfg.SelectCmd, entries)
+	selectedBody, err := selectEntry(stderr, stdout, cfg.SelectCmd, entries)
 	if err != nil {
 		return err
 	}
@@ -59,12 +59,17 @@ func getEntries(client *ent.Client, text string) ([]*ent.Entry, error) {
 		All(context.Background())
 }
 
-func selectEntry(stderr io.Writer, selectCmd string, entries []*ent.Entry) (string, error) {
+func selectEntry(stderr, stdout io.Writer, selectCmd string, entries []*ent.Entry) (string, error) {
 	var inbuf string
 	dict := make(map[string]string)
 	for _, entry := range entries {
 		inbuf += fmt.Sprintf("%s\n", entry.Title)
 		dict[entry.Title] = entry.Body
+	}
+
+	if len(inbuf) == 0 {
+		fmt.Fprintf(stdout, "noting found\n")
+		return "", nil
 	}
 
 	var outbuf bytes.Buffer
