@@ -37,7 +37,10 @@ func Search(text string, cfg config.Config, stdout, stderr io.Writer) error {
 
 	if err = clipboard.Init(); err == nil {
 		clipboard.Write(clipboard.FmtText, []byte(selectedBody))
-	}
+		fmt.Fprintf(stdout, "copied '%s' to clipboard\n", selectedBody)
+	} else {
+		fmt.Fprintf(stdout, "value is '%s'\n", selectedBody)
+  }
 
 	if cfg.AutomaticallyOpenBrowser && strings.HasPrefix(selectedBody, "http") {
 		cmd := exec.Command(cfg.Browser, selectedBody)
