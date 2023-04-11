@@ -9,10 +9,10 @@ import (
 	"strings"
 
 	"entgo.io/ent/dialect/sql"
+	"github.com/atotto/clipboard"
 	"github.com/y-yagi/doco/ent"
 	"github.com/y-yagi/doco/ent/entry"
 	"github.com/y-yagi/doco/internal/config"
-	"golang.design/x/clipboard"
 )
 
 func Search(text string, cfg config.Config, stdout, stderr io.Writer) error {
@@ -35,12 +35,8 @@ func Search(text string, cfg config.Config, stdout, stderr io.Writer) error {
 		return nil
 	}
 
-	if err = clipboard.Init(); err == nil {
-		clipboard.Write(clipboard.FmtText, []byte(selectedBody))
-		fmt.Fprintf(stdout, "copied '%s' to clipboard\n", selectedBody)
-	} else {
-		fmt.Fprintf(stdout, "value is '%s'\n", selectedBody)
-  }
+	clipboard.WriteAll(selectedBody)
+	fmt.Fprintf(stdout, "copied '%s' to clipboard\n", selectedBody)
 
 	if cfg.AutomaticallyOpenBrowser && strings.HasPrefix(selectedBody, "http") {
 		cmd := exec.Command(cfg.Browser, selectedBody)
