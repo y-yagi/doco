@@ -22,6 +22,7 @@ var (
 	migrateFlag bool
 	consoleFlag bool
 	addFlag     bool
+	deleteFlag  string
 
 	version = "devel"
 )
@@ -65,6 +66,7 @@ func setFlags() {
 	flags.BoolVar(&migrateFlag, "migrate", false, "run DB migration")
 	flags.BoolVar(&addFlag, "add", false, "add new entry")
 	flags.BoolVar(&consoleFlag, "console", false, "run DB console")
+	flags.StringVar(&deleteFlag, "delete", "", "delete entry")
 	flags.Usage = usage
 }
 
@@ -102,6 +104,10 @@ func run(args []string, stdout, stderr io.Writer) int {
 
 	if consoleFlag {
 		return msg(command.Console(cfg.DataBase, stdout, stderr), stderr)
+	}
+
+	if len(deleteFlag) != 0 {
+		return msg(command.Delete(deleteFlag, cfg, stdout, stderr), stderr)
 	}
 
 	if len(flags.Args()) != 1 {
