@@ -26,20 +26,20 @@ func Search(text string, cfg config.Config, stdout, stderr io.Writer) error {
 		return fmt.Errorf("search failed: %v", err)
 	}
 
-	selectedBody, err := selectEntry(stderr, stdout, cfg.SelectCmd, entries)
+	selectedEntry, err := selectEntry(stderr, stdout, cfg.SelectCmd, entries)
 	if err != nil {
 		return err
 	}
 
-	if len(selectedBody) == 0 {
+	if selectedEntry == nil {
 		return nil
 	}
 
-	clipboard.WriteAll(selectedBody)
-	fmt.Fprintf(stdout, "copied '%s' to clipboard\n", selectedBody)
+	clipboard.WriteAll(selectedEntry.Body)
+	fmt.Fprintf(stdout, "copied '%s' to clipboard\n", selectedEntry.Body)
 
-	if cfg.AutomaticallyOpenBrowser && strings.HasPrefix(selectedBody, "http") {
-		cmd := exec.Command(cfg.Browser, selectedBody)
+	if cfg.AutomaticallyOpenBrowser && strings.HasPrefix(selectedEntry.Body, "http") {
+		cmd := exec.Command(cfg.Browser, selectedEntry.Body)
 		if err = cmd.Run(); err != nil {
 			return fmt.Errorf("command execute failed: %v", err)
 		}
@@ -58,17 +58,17 @@ func getEntries(client *ent.Client, text string) ([]*ent.Entry, error) {
 		All(context.Background())
 }
 
-func selectEntry(stderr, stdout io.Writer, selectCmd string, entries []*ent.Entry) (string, error) {
+func selectEntry(stderr, stdout io.Writer, selectCmd string, entries []*ent.Entry) (*ent.Entry, error) {
 	var inbuf string
-	dict := make(map[string]string)
+	dict := make(map[string]*ent.Entry)
 	for _, entry := range entries {
 		inbuf += fmt.Sprintf("%s\n", entry.Title)
-		dict[entry.Title] = entry.Body
+		dict[entry.Title] = entry
 	}
 
 	if len(inbuf) == 0 {
 		fmt.Fprintf(stdout, "noting found\n")
-		return "", nil
+		return nil, nil
 	}
 
 	var outbuf bytes.Buffer
@@ -77,12 +77,12 @@ func selectEntry(stderr, stdout io.Writer, selectCmd string, entries []*ent.Entr
 	cmd.Stdout = &outbuf
 	cmd.Stdin = strings.NewReader(inbuf)
 	if err := cmd.Run(); err != nil {
-		return "", fmt.Errorf("select command failed: %v", err)
+		return nil, fmt.Errorf("select command failed: %v", err)
 	}
 
 	selected := strings.TrimRight(outbuf.String(), "\n")
 	if len(selectCmd) == 0 {
-		return "", nil
+		return nil, nil
 	}
 
 	return dict[selected], nil
