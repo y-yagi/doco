@@ -23,6 +23,7 @@ var (
 	consoleFlag bool
 	addFlag     bool
 	deleteFlag  string
+	listFlag    bool
 
 	version = "devel"
 )
@@ -67,6 +68,7 @@ func setFlags() {
 	flags.BoolVar(&addFlag, "add", false, "add new entry")
 	flags.BoolVar(&consoleFlag, "console", false, "run DB console")
 	flags.StringVar(&deleteFlag, "delete", "", "delete entry")
+	flags.BoolVar(&listFlag, "list", false, "show all entries")
 	flags.Usage = usage
 }
 
@@ -108,6 +110,10 @@ func run(args []string, stdout, stderr io.Writer) int {
 
 	if len(deleteFlag) != 0 {
 		return msg(command.Delete(deleteFlag, cfg, stdout, stderr), stderr)
+	}
+
+	if listFlag {
+		return msg(command.List(cfg.DataBase, stdout, stderr), stderr)
 	}
 
 	if len(flags.Args()) != 1 {

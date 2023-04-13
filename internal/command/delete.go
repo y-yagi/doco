@@ -16,7 +16,7 @@ func Delete(text string, cfg config.Config, stdout, stderr io.Writer) error {
 		return fmt.Errorf("failed opening connection to sqlite: %v", err)
 	}
 
-	entries, err := getEntries(client, text)
+	entries, err := getEntriesByTitle(client, text)
 	if err != nil {
 		return fmt.Errorf("search failed: %v", err)
 	}

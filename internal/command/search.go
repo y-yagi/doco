@@ -21,7 +21,7 @@ func Search(text string, cfg config.Config, stdout, stderr io.Writer) error {
 		return fmt.Errorf("failed opening connection to sqlite: %v", err)
 	}
 
-	entries, err := getEntries(client, text)
+	entries, err := getEntriesByTitle(client, text)
 	if err != nil {
 		return fmt.Errorf("search failed: %v", err)
 	}
@@ -48,12 +48,21 @@ func Search(text string, cfg config.Config, stdout, stderr io.Writer) error {
 	return nil
 }
 
-func getEntries(client *ent.Client, text string) ([]*ent.Entry, error) {
+func getEntriesByTitle(client *ent.Client, text string) ([]*ent.Entry, error) {
 	return client.Entry.
 		Query().
 		Where(func(s *sql.Selector) {
 			s.Where(sql.Like(entry.FieldTitle, "%"+text+"%"))
 		}).
+		Order(ent.Asc(entry.FieldID)).
+		Select(entry.FieldID, entry.FieldTitle, entry.FieldBody, entry.FieldTag).
+		All(context.Background())
+}
+
+func getEntries(client *ent.Client) ([]*ent.Entry, error) {
+	return client.Entry.
+		Query().
+		Order(ent.Asc(entry.FieldID)).
 		Select(entry.FieldID, entry.FieldTitle, entry.FieldBody, entry.FieldTag).
 		All(context.Background())
 }
