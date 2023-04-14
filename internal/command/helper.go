@@ -3,12 +3,14 @@ package command
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"os/exec"
 	"strings"
 
 	"entgo.io/ent/dialect/sql"
+	"github.com/manifoldco/promptui"
 	"github.com/y-yagi/doco/ent"
 	"github.com/y-yagi/doco/ent/entry"
 )
@@ -60,4 +62,45 @@ func selectEntry(stderr, stdout io.Writer, selectCmd string, entries []*ent.Entr
 	}
 
 	return dict[selected], nil
+}
+
+func promptInputEntry(entry *ent.Entry) error {
+	var err error
+	emptyVaidate := func(input string) error {
+		if len(input) < 1 {
+			return errors.New("value must have more than 1 character")
+		}
+		return nil
+	}
+
+	prompt := promptui.Prompt{
+		Label:    "Title",
+		Validate: emptyVaidate,
+		Default:  entry.Title,
+	}
+
+	if entry.Title, err = prompt.Run(); err != nil {
+		return fmt.Errorf("prompty failed: %v", err)
+	}
+
+	prompt = promptui.Prompt{
+		Label:    "Body",
+		Validate: emptyVaidate,
+		Default:  entry.Body,
+	}
+
+	if entry.Body, err = prompt.Run(); err != nil {
+		return fmt.Errorf("prompty failed: %v", err)
+	}
+
+	prompt = promptui.Prompt{
+		Label:   "Tag",
+		Default: entry.Tag,
+	}
+
+	if entry.Tag, err = prompt.Run(); err != nil {
+		return fmt.Errorf("prompty failed: %v", err)
+	}
+
+	return nil
 }
