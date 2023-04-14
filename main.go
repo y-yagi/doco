@@ -53,7 +53,10 @@ func init() {
 	}
 
 	if needToSave {
-		configure.Save(cmd, cfg)
+		if err = configure.Save(cmd, cfg); err != nil {
+			fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+			os.Exit(1)
+		}
 	}
 }
 
