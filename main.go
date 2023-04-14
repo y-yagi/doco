@@ -22,6 +22,7 @@ var (
 	migrateFlag bool
 	consoleFlag bool
 	addFlag     bool
+	updateFlag  string
 	deleteFlag  string
 	listFlag    bool
 
@@ -69,6 +70,7 @@ func setFlags() {
 	flags.BoolVar(&consoleFlag, "console", false, "run DB console")
 	flags.StringVar(&deleteFlag, "delete", "", "delete entry")
 	flags.BoolVar(&listFlag, "list", false, "show all entries")
+	flags.StringVar(&updateFlag, "update", "", "update entry")
 	flags.Usage = usage
 }
 
@@ -110,6 +112,10 @@ func run(args []string, stdout, stderr io.Writer) int {
 
 	if len(deleteFlag) != 0 {
 		return msg(command.Delete(deleteFlag, cfg, stdout, stderr), stderr)
+	}
+
+	if len(updateFlag) != 0 {
+		return msg(command.Update(updateFlag, cfg, stdout, stderr), stderr)
 	}
 
 	if listFlag {
