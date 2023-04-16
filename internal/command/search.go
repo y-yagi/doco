@@ -5,8 +5,10 @@ import (
 	"io"
 	"os/exec"
 	"strings"
+	"time"
 
-	"github.com/atotto/clipboard"
+	"golang.design/x/clipboard"
+
 	"github.com/y-yagi/doco/ent"
 	"github.com/y-yagi/doco/internal/config"
 )
@@ -31,17 +33,26 @@ func Search(text string, cfg config.Config, stdout, stderr io.Writer) error {
 		return nil
 	}
 
-	if err := clipboard.WriteAll(selectedEntry.Body); err == nil {
-		fmt.Fprintf(stdout, "copied '%s' to clipboard\n", selectedEntry.Body)
-	} else {
-		fmt.Fprintf(stdout, "value is '%s'\n", selectedEntry.Body)
-	}
-
 	if cfg.AutomaticallyOpenBrowser && strings.HasPrefix(selectedEntry.Body, "http") {
 		cmd := exec.Command(cfg.Browser, selectedEntry.Body)
 		if err = cmd.Run(); err != nil {
 			return fmt.Errorf("command execute failed: %v", err)
 		}
+	}
+
+	if err := clipboard.Init(); err != nil {
+		fmt.Fprintf(stdout, "value is '%s'\n", selectedEntry.Body)
+		return nil
+	}
+
+	clipch := clipboard.Write(clipboard.FmtText, []byte(selectedEntry.Body))
+	fmt.Fprintf(stdout, "copied '%s' to clipboard\n", selectedEntry.Body)
+
+	// This is needed to work on Linux.
+	// Ref: https://github.com/golang-design/clipboard/issues/15
+	select {
+	case <-clipch:
+	case <-time.After(1 * time.Second):
 	}
 
 	return nil
