@@ -16,15 +16,16 @@ import (
 const cmd = "doco"
 
 var (
-	cfg         config.Config
-	flags       *flag.FlagSet
-	showVersion bool
-	migrateFlag bool
-	consoleFlag bool
-	addFlag     bool
-	updateFlag  string
-	deleteFlag  string
-	listFlag    bool
+	cfg           config.Config
+	flags         *flag.FlagSet
+	showVersion   bool
+	migrateFlag   bool
+	consoleFlag   bool
+	addFlag       bool
+	updateFlag    string
+	deleteFlag    string
+	listFlag      bool
+	configureFlag bool
 
 	version = "devel"
 )
@@ -74,6 +75,7 @@ func setFlags() {
 	flags.StringVar(&deleteFlag, "delete", "", "delete entry")
 	flags.BoolVar(&listFlag, "list", false, "show all entries")
 	flags.StringVar(&updateFlag, "update", "", "update entry")
+	flags.BoolVar(&configureFlag, "configure", false, "edit config")
 	flags.Usage = usage
 }
 
@@ -123,6 +125,10 @@ func run(args []string, stdout, stderr io.Writer) int {
 
 	if listFlag {
 		return msg(command.List(cfg.DataBase, stdout, stderr), stderr)
+	}
+
+	if configureFlag {
+		return msg(configure.Edit(cmd, os.Getenv("EDITOR")), stderr)
 	}
 
 	if len(flags.Args()) != 1 {
