@@ -29,7 +29,7 @@ func Update(text string, cfg config.Config, stdout, stderr io.Writer) error {
 		return nil
 	}
 
-	if err = promptInputEntry(e); err != nil {
+	if err = inputEntryByPrompt(e); err != nil {
 		return err
 	}
 

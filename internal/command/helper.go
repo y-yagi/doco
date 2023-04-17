@@ -64,7 +64,7 @@ func selectEntry(stderr, stdout io.Writer, selectCmd string, entries []*ent.Entr
 	return dict[selected], nil
 }
 
-func promptInputEntry(entry *ent.Entry) error {
+func inputEntryByPrompt(entry *ent.Entry) error {
 	var err error
 	emptyVaidate := func(input string) error {
 		if len(input) < 1 {

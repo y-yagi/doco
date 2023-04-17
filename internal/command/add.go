@@ -16,7 +16,7 @@ func Add(database string, stdout, stderr io.Writer) error {
 	defer client.Close()
 
 	entry := ent.Entry{}
-	if err = promptInputEntry(&entry); err != nil {
+	if err = inputEntryByPrompt(&entry); err != nil {
 		return err
 	}
 
