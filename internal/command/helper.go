@@ -80,7 +80,7 @@ func promptInputEntry(entry *ent.Entry) error {
 	}
 
 	if entry.Title, err = prompt.Run(); err != nil {
-		return fmt.Errorf("prompty failed: %v", err)
+		return fmt.Errorf("prompt failed: %v", err)
 	}
 
 	prompt = promptui.Prompt{
@@ -90,7 +90,7 @@ func promptInputEntry(entry *ent.Entry) error {
 	}
 
 	if entry.Body, err = prompt.Run(); err != nil {
-		return fmt.Errorf("prompty failed: %v", err)
+		return fmt.Errorf("prompt failed: %v", err)
 	}
 
 	prompt = promptui.Prompt{
@@ -99,7 +99,7 @@ func promptInputEntry(entry *ent.Entry) error {
 	}
 
 	if entry.Tag, err = prompt.Run(); err != nil {
-		return fmt.Errorf("prompty failed: %v", err)
+		return fmt.Errorf("prompt failed: %v", err)
 	}
 
 	return nil
