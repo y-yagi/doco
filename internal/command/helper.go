@@ -125,29 +125,45 @@ func inputEntryByEditor(entry *ent.Entry, editor string) error {
 		return fmt.Errorf("encode failed: %v", err)
 	}
 
-	cmd := exec.Command(editor, file.Name())
-	cmd.Stdin = os.Stdin
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	if err = cmd.Run(); err != nil {
-		return fmt.Errorf("editor starting failed: %v", err)
+	if err = runEditor(editor, file.Name()); err != nil {
+		return err
 	}
 
-	if _, err = file.Seek(0, 0); err != nil {
-		return fmt.Errorf("file seek failed: %v", err)
-	}
-
-	if err = toml.NewDecoder(file).Decode(&tmpEntry); err != nil {
-		return fmt.Errorf("decode failed: %v", err)
-	}
-
-	if len(tmpEntry.Title) == 0 || len(tmpEntry.Body) == 0 {
-		return fmt.Errorf("title and body can't be empty")
+	if err = readEntryFromFile(file, &tmpEntry); err != nil {
+		return err
 	}
 
 	entry.Title = tmpEntry.Title
 	entry.Body = tmpEntry.Body
 	entry.Tag = tmpEntry.Tag
+
+	return nil
+}
+
+func runEditor(editor, filename string) error {
+	cmd := exec.Command(editor, filename)
+	cmd.Stdin = os.Stdin
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	if err := cmd.Run(); err != nil {
+		return fmt.Errorf("editor starting failed: %v", err)
+	}
+
+	return nil
+}
+
+func readEntryFromFile(file *os.File, e *TmpEntry) error {
+	if _, err := file.Seek(0, 0); err != nil {
+		return fmt.Errorf("file seek failed: %v", err)
+	}
+
+	if err := toml.NewDecoder(file).Decode(e); err != nil {
+		return fmt.Errorf("decode failed: %v", err)
+	}
+
+	if len(e.Title) == 0 || len(e.Body) == 0 {
+		return fmt.Errorf("title and body can't be empty")
+	}
 
 	return nil
 }
