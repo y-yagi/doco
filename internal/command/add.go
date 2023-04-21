@@ -29,10 +29,6 @@ func Add(database string, stdout, stderr io.Writer) error {
 		}
 	}
 
-	if len(entry.Title) == 0 || len(entry.Body) == 0 {
-		return fmt.Errorf("title and body can't be empty")
-	}
-
 	_, err = client.Entry.Create().SetTitle(entry.Title).SetBody(entry.Body).SetTag(entry.Tag).Save(context.Background())
 	if err != nil {
 		return fmt.Errorf("adding failed: %v", err)

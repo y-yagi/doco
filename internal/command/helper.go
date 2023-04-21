@@ -141,6 +141,10 @@ func inputEntryByEditor(entry *ent.Entry, editor string) error {
 		return fmt.Errorf("decode failed: %v", err)
 	}
 
+	if len(tmpEntry.Title) == 0 || len(tmpEntry.Body) == 0 {
+		return fmt.Errorf("title and body can't be empty")
+	}
+
 	entry.Title = tmpEntry.Title
 	entry.Body = tmpEntry.Body
 	entry.Tag = tmpEntry.Tag
