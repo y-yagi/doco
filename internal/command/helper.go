@@ -12,7 +12,7 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/manifoldco/promptui"
-	"github.com/pelletier/go-toml"
+	"github.com/pelletier/go-toml/v2"
 	"github.com/y-yagi/doco/ent"
 	"github.com/y-yagi/doco/ent/entry"
 )
