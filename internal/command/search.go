@@ -13,13 +13,13 @@ import (
 	"github.com/y-yagi/doco/internal/config"
 )
 
-func Search(text string, cfg config.Config, stdout, stderr io.Writer) error {
+func Search(field, text string, cfg config.Config, stdout, stderr io.Writer) error {
 	client, err := ent.Open("sqlite3", cfg.DataBase+"?_fk=1")
 	if err != nil {
 		return fmt.Errorf("failed opening connection to sqlite: %v", err)
 	}
 
-	entries, err := getEntriesByTitle(client, text)
+	entries, err := getEntriesBy(client, field, text)
 	if err != nil {
 		return fmt.Errorf("search failed: %v", err)
 	}

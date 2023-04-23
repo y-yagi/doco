@@ -24,10 +24,14 @@ type TmpEntry struct {
 }
 
 func getEntriesByTitle(client *ent.Client, text string) ([]*ent.Entry, error) {
+	return getEntriesBy(client, entry.FieldTitle, text)
+}
+
+func getEntriesBy(client *ent.Client, field, text string) ([]*ent.Entry, error) {
 	return client.Entry.
 		Query().
 		Where(func(s *sql.Selector) {
-			s.Where(sql.Like(entry.FieldTitle, "%"+text+"%"))
+			s.Where(sql.Like(field, "%"+text+"%")).Where(sql.NEQ(field, ""))
 		}).
 		Order(ent.Asc(entry.FieldID)).
 		Select(entry.FieldID, entry.FieldTitle, entry.FieldBody, entry.FieldTag).

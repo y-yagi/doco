@@ -9,6 +9,7 @@ import (
 
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/y-yagi/configure"
+	"github.com/y-yagi/doco/ent/entry"
 	"github.com/y-yagi/doco/internal/command"
 	"github.com/y-yagi/doco/internal/config"
 )
@@ -26,6 +27,7 @@ var (
 	deleteFlag    string
 	listFlag      bool
 	configureFlag bool
+	tagFlag       string
 
 	version = "devel"
 )
@@ -76,6 +78,7 @@ func setFlags() {
 	flags.BoolVar(&listFlag, "list", false, "show all entries")
 	flags.StringVar(&updateFlag, "update", "", "update entry")
 	flags.BoolVar(&configureFlag, "configure", false, "edit config")
+	flags.StringVar(&tagFlag, "tag", "", "search entry by tag")
 	flags.Usage = usage
 }
 
@@ -127,6 +130,10 @@ func run(args []string, stdout, stderr io.Writer) int {
 		return msg(command.List(cfg.DataBase, stdout, stderr), stderr)
 	}
 
+	if len(tagFlag) != 0 {
+		return msg(command.Search(entry.FieldTag, tagFlag, cfg, stdout, stderr), stderr)
+	}
+
 	if configureFlag {
 		return msg(configure.Edit(cmd, os.Getenv("EDITOR")), stderr)
 	}
@@ -136,5 +143,5 @@ func run(args []string, stdout, stderr io.Writer) int {
 		return 1
 	}
 
-	return msg(command.Search(flags.Arg(0), cfg, stdout, stderr), stderr)
+	return msg(command.Search(entry.FieldTitle, flags.Arg(0), cfg, stdout, stderr), stderr)
 }
