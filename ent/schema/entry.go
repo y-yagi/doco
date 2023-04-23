@@ -13,8 +13,8 @@ type Entry struct {
 // Fields of the Entry.
 func (Entry) Fields() []ent.Field {
 	return []ent.Field{
-		field.String("title").Unique(),
-		field.String("body"),
+		field.String("title").MinLen(1).Unique(),
+		field.String("body").MinLen(1),
 		field.String("tag"),
 	}
 }
