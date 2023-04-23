@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 
+	"github.com/olekukonko/tablewriter"
 	"github.com/y-yagi/doco/ent"
 )
 
@@ -18,9 +19,14 @@ func List(database string, stdout, stderr io.Writer) error {
 		return fmt.Errorf("get entries failed: %v", err)
 	}
 
+	table := tablewriter.NewWriter(stdout)
+	table.SetHeader([]string{"Title", "Tag", "Body"})
+
 	for _, entry := range entries {
-		fmt.Fprintf(stdout, "%s: %s\n", entry.Title, entry.Body)
+		table.Append([]string{entry.Title, entry.Tag, entry.Body})
 	}
+
+	table.Render()
 
 	return nil
 }
