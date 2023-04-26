@@ -135,7 +135,7 @@ func run(args []string, stdout, stderr io.Writer) int {
 	}
 
 	if configureFlag {
-		return msg(configure.Edit(cmd, os.Getenv("EDITOR")), stderr)
+		return msg(configure.Edit(cmd, os.Getenv("DOCO_EDITOR")), stderr)
 	}
 
 	if len(flags.Args()) != 1 {
