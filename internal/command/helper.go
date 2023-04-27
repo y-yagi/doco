@@ -78,39 +78,36 @@ func selectEntry(stderr, stdout io.Writer, selectCmd string, entries []*ent.Entr
 
 func inputEntryByPrompt(entry *ent.Entry) error {
 	var err error
-	emptyVaidate := func(input string) error {
+	lengthVaidate := func(input string) error {
 		if len(input) < 1 {
 			return errors.New("value must have more than 1 character")
 		}
 		return nil
 	}
 
-	prompt := promptui.Prompt{
-		Label:    "Title",
-		Validate: emptyVaidate,
-		Default:  entry.Title,
+	emptyVaidate := func(_input string) error {
+		return nil
 	}
 
-	if entry.Title, err = prompt.Run(); err != nil {
+	getInputFromPrompt := func(label string, validate promptui.ValidateFunc, defau string) (string, error) {
+		prompt := promptui.Prompt{
+			Label:    label,
+			Validate: validate,
+			Default:  defau,
+		}
+
+		return prompt.Run()
+	}
+
+	if entry.Title, err = getInputFromPrompt("Title", lengthVaidate, entry.Title); err != nil {
 		return fmt.Errorf("prompt failed: %v", err)
 	}
 
-	prompt = promptui.Prompt{
-		Label:    "Body",
-		Validate: emptyVaidate,
-		Default:  entry.Body,
-	}
-
-	if entry.Body, err = prompt.Run(); err != nil {
+	if entry.Body, err = getInputFromPrompt("Body", lengthVaidate, entry.Body); err != nil {
 		return fmt.Errorf("prompt failed: %v", err)
 	}
 
-	prompt = promptui.Prompt{
-		Label:   "Tag",
-		Default: entry.Tag,
-	}
-
-	if entry.Tag, err = prompt.Run(); err != nil {
+	if entry.Tag, err = getInputFromPrompt("Tag", emptyVaidate, entry.Tag); err != nil {
 		return fmt.Errorf("prompt failed: %v", err)
 	}
 
