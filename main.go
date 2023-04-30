@@ -83,8 +83,8 @@ func setFlags() {
 }
 
 func usage() {
-	fmt.Fprintf(os.Stderr, "Usage: %s [OPTIONS] TEXT\n\n", cmd)
-	fmt.Fprintln(os.Stderr, "OPTIONS:")
+	fmt.Fprintf(os.Stdout, "Usage: %s [OPTIONS] TEXT\n\n", cmd)
+	fmt.Fprintln(os.Stdout, "OPTIONS:")
 	flags.PrintDefaults()
 }
 
