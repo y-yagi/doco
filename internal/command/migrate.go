@@ -4,14 +4,12 @@ import (
 	"context"
 	"fmt"
 	"io"
-
-	"github.com/y-yagi/doco/ent"
 )
 
 func Migrate(database string, stdout, stderr io.Writer) error {
-	client, err := ent.Open("sqlite3", database+"?_fk=1")
+	client, err := getEntClient(database)
 	if err != nil {
-		return fmt.Errorf("failed opening connection to sqlite: %v", err)
+		return err
 	}
 	defer client.Close()
 

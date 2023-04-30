@@ -6,15 +6,15 @@ import (
 	"io"
 
 	"github.com/manifoldco/promptui"
-	"github.com/y-yagi/doco/ent"
 	"github.com/y-yagi/doco/internal/config"
 )
 
 func Delete(text string, cfg config.Config, stdout, stderr io.Writer) error {
-	client, err := ent.Open("sqlite3", cfg.DataBase+"?_fk=1")
+	client, err := getEntClient(cfg.DataBase)
 	if err != nil {
-		return fmt.Errorf("failed opening connection to sqlite: %v", err)
+		return err
 	}
+	defer client.Close()
 
 	entries, err := getEntriesByTitle(client, text)
 	if err != nil {

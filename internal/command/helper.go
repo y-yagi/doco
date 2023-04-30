@@ -23,6 +23,14 @@ type TmpEntry struct {
 	Tag   string `toml:"tag"`
 }
 
+func getEntClient(database string) (*ent.Client, error) {
+	client, err := ent.Open("sqlite3", database+"?_fk=1")
+	if err != nil {
+		return nil, fmt.Errorf("failed opening connection to sqlite: %v", err)
+	}
+	return client, nil
+}
+
 func getEntriesByTitle(client *ent.Client, text string) ([]*ent.Entry, error) {
 	return getEntriesBy(client, entry.FieldTitle, text)
 }
