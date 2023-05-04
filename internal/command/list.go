@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/olekukonko/tablewriter"
+	"github.com/y-yagi/expandedwriter"
 )
 
 func List(database string, stdout, stderr io.Writer) error {
@@ -19,14 +19,14 @@ func List(database string, stdout, stderr io.Writer) error {
 		return fmt.Errorf("get entries failed: %v", err)
 	}
 
-	table := tablewriter.NewWriter(stdout)
-	table.SetHeader([]string{"Title", "Tag", "Body"})
+	w := expandedwriter.NewWriter(stdout)
+	w.SetFields([]string{"Title", "Tag", "Body"})
 
 	for _, entry := range entries {
-		table.Append([]string{entry.Title, entry.Tag, entry.Body})
+		w.Append([]string{entry.Title, entry.Tag, entry.Body})
 	}
 
-	table.Render()
+	w.Render()
 
 	return nil
 }

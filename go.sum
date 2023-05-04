@@ -62,6 +62,8 @@ github.com/stretchr/testify v1.8.1/go.mod h1:w2LPCIKwWwSfY2zedu0+kehJoqGctiVI29o
 github.com/stretchr/testify v1.8.2 h1:+h33VjcLVPDHtOdpUCuF+7gSuG3yGIftsP1YvFihtJ8=
 github.com/y-yagi/configure v0.3.0 h1:wPnzJ3/sYzT6HM69VgN+W7De7RreY4V0Z+zjhddANic=
 github.com/y-yagi/configure v0.3.0/go.mod h1:yAbu6cV1EUgS3kKEuYGc0KRv3aRDhIeBghGfSe5uWZY=
+github.com/y-yagi/expandedwriter v0.1.0 h1:lcf50p3bxcPFGHV9wws/5OuEA81402cebG0/6ct8n8E=
+github.com/y-yagi/expandedwriter v0.1.0/go.mod h1:zJpRKrqjQO65rPLUA6cpDgH4nWouPdkJ3FmQvS5TMVA=
 github.com/yuin/goldmark v1.4.13/go.mod h1:6yULJ656Px+3vBD8DxQVa3kxgyrAnzto9xy5taEt/CY=
 github.com/zclconf/go-cty v1.13.1 h1:0a6bRwuiSHtAmqCqNOE+c2oHgepv0ctoxU4FUe43kwc=
 github.com/zclconf/go-cty v1.13.1/go.mod h1:YKQzy/7pZ7iq2jNFzy5go57xdxdWoLLpaEp4u238AE0=
