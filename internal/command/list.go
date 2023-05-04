@@ -26,7 +26,5 @@ func List(database string, stdout, stderr io.Writer) error {
 		w.Append([]string{entry.Title, entry.Tag, entry.Body})
 	}
 
-	w.Render()
-
-	return nil
+	return w.Render()
 }
