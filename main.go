@@ -110,6 +110,12 @@ func run(args []string, stdout, stderr io.Writer) int {
 		return msg(command.Migrate(cfg.DataBase, stdout, stderr), stderr)
 	}
 
+	if _, err := os.Stat(cfg.DataBase); err != nil {
+		if err = command.Migrate(cfg.DataBase, stdout, stderr); err != nil {
+			return msg(err, stderr)
+		}
+	}
+
 	if addFlag {
 		return msg(command.Add(cfg.DataBase, stdout, stderr), stderr)
 	}
