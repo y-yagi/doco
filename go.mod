@@ -6,9 +6,9 @@ require (
 	entgo.io/ent v0.12.2
 	github.com/manifoldco/promptui v0.9.0
 	github.com/mattn/go-sqlite3 v1.14.16
-	github.com/olekukonko/tablewriter v0.0.5
 	github.com/pelletier/go-toml/v2 v2.0.7
 	github.com/y-yagi/configure v0.3.0
+	github.com/y-yagi/expandedwriter v0.1.0
 	golang.design/x/clipboard v0.7.0
 )
 
@@ -21,11 +21,8 @@ require (
 	github.com/google/go-cmp v0.5.9 // indirect
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/hashicorp/hcl/v2 v2.16.2 // indirect
-	github.com/mattn/go-runewidth v0.0.14 // indirect
 	github.com/mitchellh/go-wordwrap v1.0.1 // indirect
 	github.com/pelletier/go-toml v1.9.5 // indirect
-	github.com/rivo/uniseg v0.4.4 // indirect
-	github.com/y-yagi/expandedwriter v0.1.0 // indirect
 	github.com/zclconf/go-cty v1.13.1 // indirect
 	golang.org/x/exp v0.0.0-20190731235908-ec7cb31e5a56 // indirect
 	golang.org/x/image v0.7.0 // indirect
