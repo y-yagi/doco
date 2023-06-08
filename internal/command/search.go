@@ -52,7 +52,7 @@ func Search(field, text string, cfg config.Config, stdout, stderr io.Writer) err
 	// Ref: https://github.com/golang-design/clipboard/issues/15
 	select {
 	case <-clipch:
-	case <-time.After(2 * time.Second):
+	case <-time.After(1 * time.Second):
 	}
 
 	return nil
