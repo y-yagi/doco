@@ -2,8 +2,23 @@
 
 package ent
 
+import (
+	"github.com/y-yagi/doco/ent/entry"
+	"github.com/y-yagi/doco/ent/schema"
+)
+
 // The init function reads all schema descriptors with runtime code
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
+	entryFields := schema.Entry{}.Fields()
+	_ = entryFields
+	// entryDescTitle is the schema descriptor for title field.
+	entryDescTitle := entryFields[0].Descriptor()
+	// entry.TitleValidator is a validator for the "title" field. It is called by the builders before save.
+	entry.TitleValidator = entryDescTitle.Validators[0].(func(string) error)
+	// entryDescBody is the schema descriptor for body field.
+	entryDescBody := entryFields[1].Descriptor()
+	// entry.BodyValidator is a validator for the "body" field. It is called by the builders before save.
+	entry.BodyValidator = entryDescBody.Validators[0].(func(string) error)
 }
