@@ -84,6 +84,29 @@ func selectEntry(stderr, stdout io.Writer, selectCmd string, entries []*ent.Entr
 	return dict[selected], nil
 }
 
+func editEntry(client *ent.Client, e *ent.Entry) error {
+	editor := os.Getenv("DOCO_EDITOR")
+	var err error
+
+	if len(editor) != 0 {
+		if err = inputEntryByEditor(e, editor); err != nil {
+			return err
+		}
+	} else {
+		if err = inputEntryByPrompt(e); err != nil {
+			return err
+		}
+	}
+
+	if e.ID > 0 {
+		_, err = client.Entry.UpdateOneID(e.ID).SetTitle(e.Title).SetBody(e.Body).SetTag(e.Tag).Save(context.Background())
+	} else {
+		_, err = client.Entry.Create().SetTitle(e.Title).SetBody(e.Body).SetTag(e.Tag).Save(context.Background())
+	}
+
+	return err
+}
+
 func inputEntryByPrompt(entry *ent.Entry) error {
 	var err error
 	lengthVaidate := func(input string) error {

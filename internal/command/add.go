@@ -1,10 +1,8 @@
 package command
 
 import (
-	"context"
 	"fmt"
 	"io"
-	"os"
 
 	"github.com/y-yagi/doco/ent"
 )
@@ -17,20 +15,7 @@ func Add(database string, stdout, stderr io.Writer) error {
 	defer client.Close()
 
 	entry := ent.Entry{}
-	editor := os.Getenv("DOCO_EDITOR")
-
-	if len(editor) != 0 {
-		if err = inputEntryByEditor(&entry, editor); err != nil {
-			return err
-		}
-	} else {
-		if err = inputEntryByPrompt(&entry); err != nil {
-			return err
-		}
-	}
-
-	_, err = client.Entry.Create().SetTitle(entry.Title).SetBody(entry.Body).SetTag(entry.Tag).Save(context.Background())
-	if err != nil {
+	if err = editEntry(client, &entry); err != nil {
 		return fmt.Errorf("adding failed: %v", err)
 	}
 

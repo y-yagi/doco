@@ -1,10 +1,8 @@
 package command
 
 import (
-	"context"
 	"fmt"
 	"io"
-	"os"
 
 	"github.com/y-yagi/doco/internal/config"
 )
@@ -30,19 +28,7 @@ func Update(text string, cfg config.Config, stdout, stderr io.Writer) error {
 		return nil
 	}
 
-	editor := os.Getenv("DOCO_EDITOR")
-	if len(editor) != 0 {
-		if err = inputEntryByEditor(e, editor); err != nil {
-			return err
-		}
-	} else {
-		if err = inputEntryByPrompt(e); err != nil {
-			return err
-		}
-	}
-
-	_, err = client.Entry.UpdateOneID(e.ID).SetTitle(e.Title).SetBody(e.Body).SetTag(e.Tag).Save(context.Background())
-	if err != nil {
+	if err = editEntry(client, e); err != nil {
 		return fmt.Errorf("updating failed: %v", err)
 	}
 
