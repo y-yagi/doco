@@ -3,7 +3,7 @@ module github.com/y-yagi/doco
 go 1.20
 
 require (
-	entgo.io/ent v0.12.2
+	entgo.io/ent v0.12.3
 	github.com/manifoldco/promptui v0.9.0
 	github.com/mattn/go-sqlite3 v1.14.17
 	github.com/pelletier/go-toml/v2 v2.0.8
@@ -13,7 +13,7 @@ require (
 )
 
 require (
-	ariga.io/atlas v0.10.1 // indirect
+	ariga.io/atlas v0.10.2-0.20230427182402-87a07dfb83bf // indirect
 	github.com/agext/levenshtein v1.2.3 // indirect
 	github.com/apparentlymart/go-textseg/v13 v13.0.0 // indirect
 	github.com/chzyer/readline v1.5.1 // indirect
