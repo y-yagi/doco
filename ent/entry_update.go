@@ -52,7 +52,7 @@ func (eu *EntryUpdate) Mutation() *EntryMutation {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (eu *EntryUpdate) Save(ctx context.Context) (int, error) {
-	return withHooks(ctx, eu.sqlSave, eu.mutation, eu.hooks)
+	return withHooks[int, EntryMutation](ctx, eu.sqlSave, eu.mutation, eu.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -77,25 +77,7 @@ func (eu *EntryUpdate) ExecX(ctx context.Context) {
 	}
 }
 
-// check runs all checks and user-defined validators on the builder.
-func (eu *EntryUpdate) check() error {
-	if v, ok := eu.mutation.Title(); ok {
-		if err := entry.TitleValidator(v); err != nil {
-			return &ValidationError{Name: "title", err: fmt.Errorf(`ent: validator failed for field "Entry.title": %w`, err)}
-		}
-	}
-	if v, ok := eu.mutation.Body(); ok {
-		if err := entry.BodyValidator(v); err != nil {
-			return &ValidationError{Name: "body", err: fmt.Errorf(`ent: validator failed for field "Entry.body": %w`, err)}
-		}
-	}
-	return nil
-}
-
 func (eu *EntryUpdate) sqlSave(ctx context.Context) (n int, err error) {
-	if err := eu.check(); err != nil {
-		return n, err
-	}
 	_spec := sqlgraph.NewUpdateSpec(entry.Table, entry.Columns, sqlgraph.NewFieldSpec(entry.FieldID, field.TypeInt))
 	if ps := eu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
@@ -171,7 +153,7 @@ func (euo *EntryUpdateOne) Select(field string, fields ...string) *EntryUpdateOn
 
 // Save executes the query and returns the updated Entry entity.
 func (euo *EntryUpdateOne) Save(ctx context.Context) (*Entry, error) {
-	return withHooks(ctx, euo.sqlSave, euo.mutation, euo.hooks)
+	return withHooks[*Entry, EntryMutation](ctx, euo.sqlSave, euo.mutation, euo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -196,25 +178,7 @@ func (euo *EntryUpdateOne) ExecX(ctx context.Context) {
 	}
 }
 
-// check runs all checks and user-defined validators on the builder.
-func (euo *EntryUpdateOne) check() error {
-	if v, ok := euo.mutation.Title(); ok {
-		if err := entry.TitleValidator(v); err != nil {
-			return &ValidationError{Name: "title", err: fmt.Errorf(`ent: validator failed for field "Entry.title": %w`, err)}
-		}
-	}
-	if v, ok := euo.mutation.Body(); ok {
-		if err := entry.BodyValidator(v); err != nil {
-			return &ValidationError{Name: "body", err: fmt.Errorf(`ent: validator failed for field "Entry.body": %w`, err)}
-		}
-	}
-	return nil
-}
-
 func (euo *EntryUpdateOne) sqlSave(ctx context.Context) (_node *Entry, err error) {
-	if err := euo.check(); err != nil {
-		return _node, err
-	}
 	_spec := sqlgraph.NewUpdateSpec(entry.Table, entry.Columns, sqlgraph.NewFieldSpec(entry.FieldID, field.TypeInt))
 	id, ok := euo.mutation.ID()
 	if !ok {
