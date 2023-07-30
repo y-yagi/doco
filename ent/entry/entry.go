@@ -2,6 +2,10 @@
 
 package entry
 
+import (
+	"entgo.io/ent/dialect/sql"
+)
+
 const (
 	// Label holds the string label denoting the entry type in the database.
 	Label = "entry"
@@ -33,4 +37,34 @@ func ValidColumn(column string) bool {
 		}
 	}
 	return false
+}
+
+var (
+	// TitleValidator is a validator for the "title" field. It is called by the builders before save.
+	TitleValidator func(string) error
+	// BodyValidator is a validator for the "body" field. It is called by the builders before save.
+	BodyValidator func(string) error
+)
+
+// OrderOption defines the ordering options for the Entry queries.
+type OrderOption func(*sql.Selector)
+
+// ByID orders the results by the id field.
+func ByID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldID, opts...).ToFunc()
+}
+
+// ByTitle orders the results by the title field.
+func ByTitle(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldTitle, opts...).ToFunc()
+}
+
+// ByBody orders the results by the body field.
+func ByBody(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldBody, opts...).ToFunc()
+}
+
+// ByTag orders the results by the tag field.
+func ByTag(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldTag, opts...).ToFunc()
 }

@@ -18,7 +18,7 @@ import (
 type EntryQuery struct {
 	config
 	ctx        *QueryContext
-	order      []OrderFunc
+	order      []entry.OrderOption
 	inters     []Interceptor
 	predicates []predicate.Entry
 	// intermediate query (i.e. traversal path).
@@ -52,7 +52,7 @@ func (eq *EntryQuery) Unique(unique bool) *EntryQuery {
 }
 
 // Order specifies how the records should be ordered.
-func (eq *EntryQuery) Order(o ...OrderFunc) *EntryQuery {
+func (eq *EntryQuery) Order(o ...entry.OrderOption) *EntryQuery {
 	eq.order = append(eq.order, o...)
 	return eq
 }
@@ -246,7 +246,7 @@ func (eq *EntryQuery) Clone() *EntryQuery {
 	return &EntryQuery{
 		config:     eq.config,
 		ctx:        eq.ctx.Clone(),
-		order:      append([]OrderFunc{}, eq.order...),
+		order:      append([]entry.OrderOption{}, eq.order...),
 		inters:     append([]Interceptor{}, eq.inters...),
 		predicates: append([]predicate.Entry{}, eq.predicates...),
 		// clone intermediate query.

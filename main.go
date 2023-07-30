@@ -28,6 +28,8 @@ var (
 	listFlag      bool
 	configureFlag bool
 	tagFlag       string
+	exportFlag    bool
+	importFlag    string
 
 	version = "devel"
 )
@@ -79,6 +81,8 @@ func setFlags() {
 	flags.StringVar(&updateFlag, "update", "", "update entry")
 	flags.BoolVar(&configureFlag, "configure", false, "edit config")
 	flags.StringVar(&tagFlag, "tag", "", "search entry by tag")
+	flags.BoolVar(&exportFlag, "export", false, "export data to the Gist")
+	flags.StringVar(&importFlag, "import", "", "import data from Gist")
 	flags.Usage = usage
 }
 
@@ -138,6 +142,14 @@ func run(args []string, stdout, stderr io.Writer) int {
 
 	if len(tagFlag) != 0 {
 		return msg(command.Search(entry.FieldTag, tagFlag, cfg, stdout, stderr), stderr)
+	}
+
+	if exportFlag {
+		return msg(command.Export(cfg.DataBase, stdout, stderr), stderr)
+	}
+
+	if len(importFlag) != 0 {
+		return msg(command.Import(cfg.DataBase, importFlag, stdout, stderr), stderr)
 	}
 
 	if configureFlag {
