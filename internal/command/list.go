@@ -7,8 +7,19 @@ import (
 	"github.com/y-yagi/expandedwriter"
 )
 
-func List(database string, stdout, stderr io.Writer) error {
-	client, err := getEntClient(database)
+type ListCommand struct {
+	Command
+	database string
+	stdout   io.Writer
+	stderr   io.Writer
+}
+
+func List(database string, stdout, stderr io.Writer) *ListCommand {
+	return &ListCommand{database: database, stdout: stdout, stderr: stderr}
+}
+
+func (c *ListCommand) Run() error {
+	client, err := getEntClient(c.database)
 	if err != nil {
 		return err
 	}
@@ -19,7 +30,7 @@ func List(database string, stdout, stderr io.Writer) error {
 		return fmt.Errorf("get entries failed: %v", err)
 	}
 
-	w := expandedwriter.NewWriter(stdout)
+	w := expandedwriter.NewWriter(c.stdout)
 	w.SetFields([]string{"Title", "Tag", "Body"})
 
 	for _, entry := range entries {

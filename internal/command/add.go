@@ -7,8 +7,19 @@ import (
 	"github.com/y-yagi/doco/ent"
 )
 
-func Add(database string, stdout, stderr io.Writer) error {
-	client, err := getEntClient(database)
+type AddCommand struct {
+	Command
+	database string
+	stdout   io.Writer
+	stderr   io.Writer
+}
+
+func Add(database string, stdout, stderr io.Writer) *AddCommand {
+	return &AddCommand{database: database, stdout: stdout, stderr: stderr}
+}
+
+func (c *AddCommand) Run() error {
+	client, err := getEntClient(c.database)
 	if err != nil {
 		return err
 	}
@@ -19,6 +30,6 @@ func Add(database string, stdout, stderr io.Writer) error {
 		return fmt.Errorf("adding failed: %v", err)
 	}
 
-	fmt.Fprintf(stdout, "Added '%s'\n", entry.Title)
+	fmt.Fprintf(c.stdout, "Added '%s'\n", entry.Title)
 	return nil
 }

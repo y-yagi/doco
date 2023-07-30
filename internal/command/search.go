@@ -12,19 +12,32 @@ import (
 	"github.com/y-yagi/doco/internal/config"
 )
 
-func Search(field, text string, cfg config.Config, stdout, stderr io.Writer) error {
-	client, err := getEntClient(cfg.DataBase)
+type SearchCommand struct {
+	Command
+	field  string
+	text   string
+	cfg    config.Config
+	stdout io.Writer
+	stderr io.Writer
+}
+
+func Search(field, text string, cfg config.Config, stdout, stderr io.Writer) *SearchCommand {
+	return &SearchCommand{field: field, text: text, cfg: cfg, stdout: stdout, stderr: stderr}
+}
+
+func (c *SearchCommand) Run() error {
+	client, err := getEntClient(c.cfg.DataBase)
 	if err != nil {
 		return err
 	}
 	defer client.Close()
 
-	entries, err := getEntriesBy(client, field, text)
+	entries, err := getEntriesBy(client, c.field, c.text)
 	if err != nil {
 		return fmt.Errorf("search failed: %v", err)
 	}
 
-	selectedEntry, err := selectEntry(stderr, stdout, cfg.SelectCmd, entries)
+	selectedEntry, err := selectEntry(c.stderr, c.stdout, c.cfg.SelectCmd, entries)
 	if err != nil {
 		return err
 	}
@@ -33,20 +46,20 @@ func Search(field, text string, cfg config.Config, stdout, stderr io.Writer) err
 		return nil
 	}
 
-	if cfg.AutomaticallyOpenBrowser && strings.HasPrefix(selectedEntry.Body, "http") {
-		cmd := exec.Command(cfg.Browser, selectedEntry.Body)
+	if c.cfg.AutomaticallyOpenBrowser && strings.HasPrefix(selectedEntry.Body, "http") {
+		cmd := exec.Command(c.cfg.Browser, selectedEntry.Body)
 		if err = cmd.Run(); err != nil {
 			return fmt.Errorf("command execute failed: %v", err)
 		}
 	}
 
 	if err := clipboard.Init(); err != nil {
-		fmt.Fprintf(stdout, "value is '%s'\n", selectedEntry.Body)
+		fmt.Fprintf(c.stdout, "value is '%s'\n", selectedEntry.Body)
 		return nil
 	}
 
 	clipch := clipboard.Write(clipboard.FmtText, []byte(selectedEntry.Body))
-	fmt.Fprintf(stdout, "copied '%s' to clipboard\n", selectedEntry.Body)
+	fmt.Fprintf(c.stdout, "copied '%s' to clipboard\n", selectedEntry.Body)
 
 	// This is needed to work on Linux.
 	// Ref: https://github.com/golang-design/clipboard/issues/15
