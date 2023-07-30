@@ -12,8 +12,20 @@ import (
 	"golang.org/x/oauth2"
 )
 
-func Import(database, gistURL string, stdout, stderr io.Writer) error {
-	gistID, found := strings.CutPrefix(gistURL, "https://gist.github.com/")
+type ImportCommand struct {
+	Command
+	database string
+	gistURL  string
+	stdout   io.Writer
+	stderr   io.Writer
+}
+
+func Import(database, gistURL string, stdout, stderr io.Writer) *ImportCommand {
+	return &ImportCommand{database: database, gistURL: gistURL, stdout: stdout, stderr: stderr}
+}
+
+func (c *ImportCommand) Run() error {
+	gistID, found := strings.CutPrefix(c.gistURL, "https://gist.github.com/")
 	if !found {
 		return errors.New("the URL need to start with 'https://gist.github.com'")
 	}
@@ -32,17 +44,17 @@ func Import(database, gistURL string, stdout, stderr io.Writer) error {
 	}
 
 	sql := gist.Files[github.GistFilename("export.sql")].Content
-	if err = insertBackupSQL(database, *sql); err != nil {
+	if err = c.insertBackupSQL(*sql); err != nil {
 		return fmt.Errorf("inserting backup is failed: %v", err)
 	}
 
-	fmt.Fprintln(stdout, "Data is imported")
+	fmt.Fprintln(c.stdout, "Data is imported")
 
 	return nil
 }
 
-func insertBackupSQL(database, sql string) error {
-	client, err := getEntClient(database)
+func (c *ImportCommand) insertBackupSQL(sql string) error {
+	client, err := getEntClient(c.database)
 	if err != nil {
 		return err
 	}

@@ -10,8 +10,19 @@ import (
 	"golang.org/x/oauth2"
 )
 
-func Export(database string, stdout, stderr io.Writer) error {
-	sql, err := generateBackupSQL(database)
+type ExportCommand struct {
+	Command
+	database string
+	stdout   io.Writer
+	stderr   io.Writer
+}
+
+func Export(database string, stdout, stderr io.Writer) *ExportCommand {
+	return &ExportCommand{database: database, stdout: stdout, stderr: stderr}
+}
+
+func (c *ExportCommand) Run() error {
+	sql, err := c.generateBackupSQL()
 	if err != nil {
 		return err
 	}
@@ -31,13 +42,13 @@ func Export(database string, stdout, stderr io.Writer) error {
 		return fmt.Errorf("creating the gist failed: %v", err)
 	}
 
-	fmt.Fprintf(stdout, "Data is exported to %s\n", *gist.GitPullURL)
+	fmt.Fprintf(c.stdout, "Data is exported to %s\n", *gist.GitPullURL)
 
 	return nil
 }
 
-func generateBackupSQL(database string) (string, error) {
-	client, err := getEntClient(database)
+func (c *ExportCommand) generateBackupSQL() (string, error) {
+	client, err := getEntClient(c.database)
 	if err != nil {
 		return "", err
 	}

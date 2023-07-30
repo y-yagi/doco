@@ -111,45 +111,45 @@ func run(args []string, stdout, stderr io.Writer) int {
 	}
 
 	if migrateFlag {
-		return msg(command.Migrate(cfg.DataBase, stdout, stderr), stderr)
+		return msg(command.Migrate(cfg.DataBase, stdout, stderr).Run(), stderr)
 	}
 
 	if _, err := os.Stat(cfg.DataBase); err != nil {
-		if err = command.Migrate(cfg.DataBase, stdout, stderr); err != nil {
+		if err = command.Migrate(cfg.DataBase, stdout, stderr).Run(); err != nil {
 			return msg(err, stderr)
 		}
 	}
 
 	if addFlag {
-		return msg(command.Add(cfg.DataBase, stdout, stderr), stderr)
+		return msg(command.Add(cfg.DataBase, stdout, stderr).Run(), stderr)
 	}
 
 	if consoleFlag {
-		return msg(command.Console(cfg.DataBase, stdout, stderr), stderr)
+		return msg(command.Console(cfg.DataBase, stdout, stderr).Run(), stderr)
 	}
 
 	if len(deleteFlag) != 0 {
-		return msg(command.Delete(deleteFlag, cfg, stdout, stderr), stderr)
+		return msg(command.Delete(deleteFlag, cfg, stdout, stderr).Run(), stderr)
 	}
 
 	if len(updateFlag) != 0 {
-		return msg(command.Update(updateFlag, cfg, stdout, stderr), stderr)
+		return msg(command.Update(updateFlag, cfg, stdout, stderr).Run(), stderr)
 	}
 
 	if listFlag {
-		return msg(command.List(cfg.DataBase, stdout, stderr), stderr)
+		return msg(command.List(cfg.DataBase, stdout, stderr).Run(), stderr)
 	}
 
 	if len(tagFlag) != 0 {
-		return msg(command.Search(entry.FieldTag, tagFlag, cfg, stdout, stderr), stderr)
+		return msg(command.Search(entry.FieldTag, tagFlag, cfg, stdout, stderr).Run(), stderr)
 	}
 
 	if exportFlag {
-		return msg(command.Export(cfg.DataBase, stdout, stderr), stderr)
+		return msg(command.Export(cfg.DataBase, stdout, stderr).Run(), stderr)
 	}
 
 	if len(importFlag) != 0 {
-		return msg(command.Import(cfg.DataBase, importFlag, stdout, stderr), stderr)
+		return msg(command.Import(cfg.DataBase, importFlag, stdout, stderr).Run(), stderr)
 	}
 
 	if configureFlag {
@@ -161,5 +161,5 @@ func run(args []string, stdout, stderr io.Writer) int {
 		return 1
 	}
 
-	return msg(command.Search(entry.FieldTitle, flags.Arg(0), cfg, stdout, stderr), stderr)
+	return msg(command.Search(entry.FieldTitle, flags.Arg(0), cfg, stdout, stderr).Run(), stderr)
 }

@@ -9,19 +9,31 @@ import (
 	"github.com/y-yagi/doco/internal/config"
 )
 
-func Delete(text string, cfg config.Config, stdout, stderr io.Writer) error {
-	client, err := getEntClient(cfg.DataBase)
+type DeleteCommand struct {
+	Command
+	text   string
+	cfg    config.Config
+	stdout io.Writer
+	stderr io.Writer
+}
+
+func Delete(text string, cfg config.Config, stdout, stderr io.Writer) *DeleteCommand {
+	return &DeleteCommand{text: text, cfg: cfg, stdout: stdout, stderr: stderr}
+}
+
+func (c *DeleteCommand) Run() error {
+	client, err := getEntClient(c.cfg.DataBase)
 	if err != nil {
 		return err
 	}
 	defer client.Close()
 
-	entries, err := getEntriesByTitle(client, text)
+	entries, err := getEntriesByTitle(client, c.text)
 	if err != nil {
 		return fmt.Errorf("search failed: %v", err)
 	}
 
-	selectedEntry, err := selectEntry(stderr, stdout, cfg.SelectCmd, entries)
+	selectedEntry, err := selectEntry(c.stderr, c.stdout, c.cfg.SelectCmd, entries)
 	if err != nil {
 		return err
 	}
@@ -44,6 +56,6 @@ func Delete(text string, cfg config.Config, stdout, stderr io.Writer) error {
 		return fmt.Errorf("delete failed: %v", err)
 	}
 
-	fmt.Fprintf(stdout, "Deleted '%s'\n", selectedEntry.Title)
+	fmt.Fprintf(c.stdout, "Deleted '%s'\n", selectedEntry.Title)
 	return nil
 }

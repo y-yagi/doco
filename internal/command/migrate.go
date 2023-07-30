@@ -6,8 +6,19 @@ import (
 	"io"
 )
 
-func Migrate(database string, stdout, stderr io.Writer) error {
-	client, err := getEntClient(database)
+type MigrateCommand struct {
+	Command
+	database string
+	stdout   io.Writer
+	stderr   io.Writer
+}
+
+func Migrate(database string, stdout, stderr io.Writer) *MigrateCommand {
+	return &MigrateCommand{database: database, stdout: stdout, stderr: stderr}
+}
+
+func (c *MigrateCommand) Run() error {
+	client, err := getEntClient(c.database)
 	if err != nil {
 		return err
 	}
