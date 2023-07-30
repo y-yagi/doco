@@ -44,7 +44,7 @@ func (ec *EntryCreate) Mutation() *EntryMutation {
 
 // Save creates the Entry in the database.
 func (ec *EntryCreate) Save(ctx context.Context) (*Entry, error) {
-	return withHooks[*Entry, EntryMutation](ctx, ec.sqlSave, ec.mutation, ec.hooks)
+	return withHooks(ctx, ec.sqlSave, ec.mutation, ec.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -74,8 +74,18 @@ func (ec *EntryCreate) check() error {
 	if _, ok := ec.mutation.Title(); !ok {
 		return &ValidationError{Name: "title", err: errors.New(`ent: missing required field "Entry.title"`)}
 	}
+	if v, ok := ec.mutation.Title(); ok {
+		if err := entry.TitleValidator(v); err != nil {
+			return &ValidationError{Name: "title", err: fmt.Errorf(`ent: validator failed for field "Entry.title": %w`, err)}
+		}
+	}
 	if _, ok := ec.mutation.Body(); !ok {
 		return &ValidationError{Name: "body", err: errors.New(`ent: missing required field "Entry.body"`)}
+	}
+	if v, ok := ec.mutation.Body(); ok {
+		if err := entry.BodyValidator(v); err != nil {
+			return &ValidationError{Name: "body", err: fmt.Errorf(`ent: validator failed for field "Entry.body": %w`, err)}
+		}
 	}
 	if _, ok := ec.mutation.Tag(); !ok {
 		return &ValidationError{Name: "tag", err: errors.New(`ent: missing required field "Entry.tag"`)}
@@ -144,8 +154,8 @@ func (ecb *EntryCreateBulk) Save(ctx context.Context) ([]*Entry, error) {
 					return nil, err
 				}
 				builder.mutation = mutation
-				nodes[i], specs[i] = builder.createSpec()
 				var err error
+				nodes[i], specs[i] = builder.createSpec()
 				if i < len(mutators)-1 {
 					_, err = mutators[i+1].Mutate(root, ecb.builders[i+1].mutation)
 				} else {
