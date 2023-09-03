@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"flag"
 	"fmt"
 	"io"
@@ -153,7 +154,11 @@ func run(args []string, stdout, stderr io.Writer) int {
 	}
 
 	if configureFlag {
-		return msg(configure.Edit(cmd, os.Getenv("DOCO_EDITOR")), stderr)
+		editor := os.Getenv("DOCO_EDITOR")
+		if len(editor) == 0 {
+			return msg(errors.New("please specifiy an editor to 'DOCO_EDITOR' env"), stderr)
+		}
+		return msg(configure.Edit(cmd, editor), stderr)
 	}
 
 	if len(flags.Args()) != 1 {
