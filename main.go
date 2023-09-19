@@ -138,7 +138,7 @@ func run(args []string, stdout, stderr io.Writer) int {
 	}
 
 	if listFlag {
-		return msg(command.List(cfg.DataBase, stdout, stderr).Run(), stderr)
+		return msg(command.List(cfg.DataBase, entry.FieldTitle, flags.Arg(0), stdout, stderr).Run(), stderr)
 	}
 
 	if len(tagFlag) != 0 {
