@@ -51,6 +51,7 @@ func (c *SearchCommand) Run() error {
 		if err = cmd.Run(); err != nil {
 			return fmt.Errorf("command execute failed: %v", err)
 		}
+		return nil
 	}
 
 	if err := clipboard.Init(); err != nil {
