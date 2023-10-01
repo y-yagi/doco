@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"os/exec"
+	"runtime"
 	"strings"
 	"time"
 
@@ -62,11 +63,13 @@ func (c *SearchCommand) Run() error {
 	clipch := clipboard.Write(clipboard.FmtText, []byte(selectedEntry.Body))
 	fmt.Fprintf(c.stdout, "copied '%s' to clipboard\n", selectedEntry.Body)
 
-	// This is needed to work on Linux.
-	// Ref: https://github.com/golang-design/clipboard/issues/15
-	select {
-	case <-clipch:
-	case <-time.After(1 * time.Second):
+	if runtime.GOOS == "linux" {
+		// This is needed to work on Linux.
+		// Ref: https://github.com/golang-design/clipboard/issues/15
+		select {
+		case <-clipch:
+		case <-time.After(1 * time.Second):
+		}
 	}
 
 	return nil
