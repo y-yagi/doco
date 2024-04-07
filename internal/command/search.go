@@ -52,6 +52,7 @@ func (c *SearchCommand) Run() error {
 		if err = cmd.Run(); err != nil {
 			return fmt.Errorf("command execute failed: %v", err)
 		}
+		fmt.Fprintf(c.stdout, "Open '%s'\n", selectedEntry.Body)
 		return nil
 	}
 
