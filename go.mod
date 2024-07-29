@@ -3,7 +3,7 @@ module github.com/y-yagi/doco
 go 1.22
 
 require (
-	entgo.io/ent v0.13.1
+	entgo.io/ent v0.14.0
 	github.com/google/go-github/v53 v53.2.0
 	github.com/manifoldco/promptui v0.9.0
 	github.com/mattn/go-sqlite3 v1.14.22
