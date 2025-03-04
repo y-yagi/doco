@@ -3,6 +3,7 @@ package command
 import (
 	"fmt"
 	"io"
+	"os"
 	"os/exec"
 	"runtime"
 	"strings"
@@ -48,7 +49,13 @@ func (c *SearchCommand) Run() error {
 	}
 
 	if c.cfg.AutomaticallyOpenBrowser && strings.HasPrefix(selectedEntry.Body, "http") {
-		cmd := exec.Command(c.cfg.Browser, selectedEntry.Body)
+		browser := c.cfg.Browser
+
+		if len(os.Getenv("BROWSER")) > 0 {
+			browser = os.Getenv("BROWSER")
+		}
+
+		cmd := exec.Command(browser, selectedEntry.Body)
 		if err = cmd.Run(); err != nil {
 			return fmt.Errorf("command execute failed: %v", err)
 		}
