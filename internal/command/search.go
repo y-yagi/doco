@@ -54,8 +54,13 @@ func (c *SearchCommand) Run() error {
 		if len(os.Getenv("BROWSER")) > 0 {
 			browser = os.Getenv("BROWSER")
 		}
+		browserArgs := ""
 
-		cmd := exec.Command(browser, selectedEntry.Body)
+		if len(os.Getenv("BROWSER_ARGS")) > 0 {
+			browserArgs = os.Getenv("BROWSER_ARGS")
+		}
+
+		cmd := exec.Command(browser, selectedEntry.Body, browserArgs)
 		if err = cmd.Run(); err != nil {
 			return fmt.Errorf("command execute failed: %v", err)
 		}
