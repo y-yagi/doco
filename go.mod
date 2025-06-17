@@ -1,6 +1,6 @@
 module github.com/y-yagi/doco
 
-go 1.23.0
+go 1.24
 
 require (
 	entgo.io/ent v0.14.4
@@ -10,7 +10,7 @@ require (
 	github.com/pelletier/go-toml/v2 v2.2.4
 	github.com/y-yagi/configure v0.3.0
 	github.com/y-yagi/expandedwriter v0.1.1
-	golang.design/x/clipboard v0.7.0
+	golang.design/x/clipboard v0.7.1
 	golang.org/x/oauth2 v0.30.0
 )
 
@@ -34,10 +34,10 @@ require (
 	github.com/zclconf/go-cty-yaml v1.1.0 // indirect
 	golang.org/x/crypto v0.35.0 // indirect
 	golang.org/x/exp v0.0.0-20190731235908-ec7cb31e5a56 // indirect
-	golang.org/x/image v0.18.0 // indirect
-	golang.org/x/mobile v0.0.0-20230301163155-e0f57694e12c // indirect
-	golang.org/x/mod v0.23.0 // indirect
-	golang.org/x/sys v0.30.0 // indirect
+	golang.org/x/image v0.28.0 // indirect
+	golang.org/x/mobile v0.0.0-20250606033058-a2a15c67f36f // indirect
+	golang.org/x/mod v0.25.0 // indirect
+	golang.org/x/sys v0.33.0 // indirect
 	golang.org/x/term v0.29.0 // indirect
-	golang.org/x/text v0.22.0 // indirect
+	golang.org/x/text v0.26.0 // indirect
 )
