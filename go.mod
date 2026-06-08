@@ -10,7 +10,7 @@ require (
 	github.com/pelletier/go-toml/v2 v2.3.1
 	github.com/y-yagi/configure v0.3.0
 	github.com/y-yagi/expandedwriter v0.1.1
-	golang.design/x/clipboard v0.7.1
+	golang.design/x/clipboard v0.8.0
 	golang.org/x/oauth2 v0.36.0
 )
 
@@ -22,6 +22,7 @@ require (
 	github.com/bmatcuk/doublestar v1.3.4 // indirect
 	github.com/chzyer/readline v1.5.1 // indirect
 	github.com/cloudflare/circl v1.6.3 // indirect
+	github.com/ebitengine/purego v0.10.1 // indirect
 	github.com/go-openapi/inflect v0.19.0 // indirect
 	github.com/google/go-cmp v0.6.0 // indirect
 	github.com/google/go-querystring v1.1.0 // indirect
@@ -32,6 +33,7 @@ require (
 	github.com/rogpeppe/go-internal v1.14.1 // indirect
 	github.com/zclconf/go-cty v1.14.4 // indirect
 	github.com/zclconf/go-cty-yaml v1.1.0 // indirect
+	golang.design/x/x11 v0.2.0 // indirect
 	golang.org/x/crypto v0.45.0 // indirect
 	golang.org/x/exp v0.0.0-20190731235908-ec7cb31e5a56 // indirect
 	golang.org/x/image v0.38.0 // indirect
