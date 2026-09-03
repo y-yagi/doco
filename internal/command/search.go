@@ -1,13 +1,12 @@
 package command
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"os"
 	"os/exec"
-	"runtime"
 	"strings"
-	"time"
 
 	"golang.design/x/clipboard"
 
@@ -73,17 +72,10 @@ func (c *SearchCommand) Run() error {
 		return nil
 	}
 
-	clipch := clipboard.Write(clipboard.FmtText, []byte(selectedEntry.Body))
-	fmt.Fprintf(c.stdout, "copied '%s' to clipboard\n", selectedEntry.Body)
-
-	if runtime.GOOS == "linux" {
-		// This is needed to work on Linux.
-		// Ref: https://github.com/golang-design/clipboard/issues/15
-		select {
-		case <-clipch:
-		case <-time.After(1 * time.Second):
-		}
+	if _, err := clipboard.Write(context.Background(), clipboard.FmtText, []byte(selectedEntry.Body)); err != nil {
+		return fmt.Errorf("failed to copy to clipboard: %v", err)
 	}
+	fmt.Fprintf(c.stdout, "copied '%s' to clipboard\n", selectedEntry.Body)
 
 	return nil
 }
