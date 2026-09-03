@@ -1,6 +1,6 @@
 module github.com/y-yagi/doco
 
-go 1.26
+go 1.27.1
 
 require (
 	entgo.io/ent v0.14.6
