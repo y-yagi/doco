@@ -29,7 +29,7 @@ var (
 	listFlag      bool
 	configureFlag bool
 	tagFlag       string
-	exportFlag    bool
+	exportFlag    string
 	importFlag    string
 
 	version = "devel"
@@ -82,8 +82,8 @@ func setFlags() {
 	flags.StringVar(&updateFlag, "update", "", "update entry")
 	flags.BoolVar(&configureFlag, "configure", false, "edit config")
 	flags.StringVar(&tagFlag, "tag", "", "search entry by tag")
-	flags.BoolVar(&exportFlag, "export", false, "export data to the Gist")
-	flags.StringVar(&importFlag, "import", "", "import data from Gist")
+	flags.StringVar(&exportFlag, "export", "", "export data to the JSON file ('-' for stdout)")
+	flags.StringVar(&importFlag, "import", "", "import data from the JSON file ('-' for stdin)")
 	flags.Usage = usage
 }
 
@@ -145,12 +145,12 @@ func run(args []string, stdout, stderr io.Writer) int {
 		return msg(command.Search(entry.FieldTag, tagFlag, cfg, stdout, stderr).Run(), stderr)
 	}
 
-	if exportFlag {
-		return msg(command.Export(cfg.DataBase, stdout, stderr).Run(), stderr)
+	if len(exportFlag) != 0 {
+		return msg(command.Export(cfg.DataBase, exportFlag, stdout, stderr).Run(), stderr)
 	}
 
 	if len(importFlag) != 0 {
-		return msg(command.Import(cfg.DataBase, importFlag, stdout, stderr).Run(), stderr)
+		return msg(command.Import(cfg.DataBase, importFlag, os.Stdin, stdout, stderr).Run(), stderr)
 	}
 
 	if configureFlag {
