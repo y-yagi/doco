@@ -1,69 +1,73 @@
 package command
 
 import (
-	"context"
+	"encoding/json"
 	"fmt"
 	"io"
 	"os"
-
-	"github.com/google/go-github/v53/github"
-	"golang.org/x/oauth2"
 )
+
+type backupEntry struct {
+	Title string `json:"title"`
+	Body  string `json:"body"`
+	Tag   string `json:"tag"`
+}
+
+// backupVersion is the version of the export format. Increase it when the format
+// changes incompatibly, so that import can reject data it doesn't understand.
+const backupVersion = 1
+
+type backupData struct {
+	Version int           `json:"version"`
+	Entries []backupEntry `json:"entries"`
+}
 
 type ExportCommand struct {
 	Command
 	database string
+	path     string
 	stdout   io.Writer
 	stderr   io.Writer
 }
 
-func Export(database string, stdout, stderr io.Writer) *ExportCommand {
-	return &ExportCommand{database: database, stdout: stdout, stderr: stderr}
+func Export(database, path string, stdout, stderr io.Writer) *ExportCommand {
+	return &ExportCommand{database: database, path: path, stdout: stdout, stderr: stderr}
 }
 
 func (c *ExportCommand) Run() error {
-	sql, err := c.generateBackupSQL()
+	client, err := getEntClient(c.database)
 	if err != nil {
 		return err
 	}
-
-	ctx := context.Background()
-	ts := oauth2.StaticTokenSource(
-		&oauth2.Token{AccessToken: os.Getenv("GITHUB_TOKEN")},
-	)
-	tc := oauth2.NewClient(ctx, ts)
-
-	client := github.NewClient(tc)
-	files := map[github.GistFilename]github.GistFile{
-		"back of Doco": {Filename: github.String("export.sql"), Content: github.String(sql)},
-	}
-	gist, _, err := client.Gists.Create(ctx, &github.Gist{Description: github.String("backup of Doco"), Public: github.Bool(false), Files: files})
-	if err != nil {
-		return fmt.Errorf("creating the gist failed: %v", err)
-	}
-
-	fmt.Fprintf(c.stdout, "Data is exported to %s\n", *gist.GitPullURL)
-
-	return nil
-}
-
-func (c *ExportCommand) generateBackupSQL() (string, error) {
-	client, err := getEntClient(c.database)
-	if err != nil {
-		return "", err
-	}
-
 	defer client.Close()
 
 	entries, err := getEntries(client)
 	if err != nil {
-		return "", fmt.Errorf("get entries failed: %v", err)
+		return fmt.Errorf("get entries failed: %v", err)
 	}
 
-	sql := ""
+	data := backupData{Version: backupVersion, Entries: make([]backupEntry, 0, len(entries))}
 	for _, entry := range entries {
-		sql += fmt.Sprintf("INSERT INTO entries (title, body, tag) VALUES('%s', '%s', '%s');\n", entry.Title, entry.Body, entry.Tag)
+		data.Entries = append(data.Entries, backupEntry{Title: entry.Title, Body: entry.Body, Tag: entry.Tag})
 	}
 
-	return sql, nil
+	b, err := json.MarshalIndent(data, "", "  ")
+	if err != nil {
+		return fmt.Errorf("marshal failed: %v", err)
+	}
+
+	if c.path == "-" {
+		if _, err = c.stdout.Write(b); err != nil {
+			return fmt.Errorf("write failed: %v", err)
+		}
+		return nil
+	}
+
+	if err = os.WriteFile(c.path, b, 0600); err != nil {
+		return fmt.Errorf("write failed: %v", err)
+	}
+
+	fmt.Fprintf(c.stdout, "Data is exported to %s\n", c.path)
+
+	return nil
 }
