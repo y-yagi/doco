@@ -5,7 +5,7 @@ go 1.27.1
 require (
 	entgo.io/ent v0.14.6
 	github.com/manifoldco/promptui v0.9.0
-	github.com/mattn/go-sqlite3 v1.14.52
+	github.com/mattn/go-sqlite3 v1.14.53
 	github.com/pelletier/go-toml/v2 v2.4.3
 	github.com/y-yagi/configure v0.3.0
 	github.com/y-yagi/expandedwriter v0.1.1
